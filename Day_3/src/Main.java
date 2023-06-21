@@ -6,11 +6,11 @@ import java.util.Scanner;
 public class Main {
     public static void main(String[] args) {
         String mydata = "";
-        try (Scanner scanner = new Scanner(System.in, "cp866");) {
-            System.out.println("Введите свои данные (ФИО, дата рождения, телефон, пол: m/f): ");
+        try (Scanner scanner = new Scanner(System.in)) {
+            System.out.println("Введите Ваши данные (ФИО, дата рождения, телефон, пол: м/ж): ");
             mydata = scanner.nextLine();
         }
-        CheckParseData ch = new CheckParseData(mydata);
+        CheckData ch = new CheckData(mydata);
         if (ch.getCorrect()) {
             File file = new File(ch.getSurname());
             try (FileWriter writer = new FileWriter(file, true);) {

@@ -1,4 +1,4 @@
-public class CheckParseData {
+public class CheckData {
 
     private String Name;
     private String Surname;
@@ -8,7 +8,7 @@ public class CheckParseData {
     private char Gender;
     private boolean CorrectData = true;
 
-    public CheckParseData(String enterString) {
+    public CheckData(String enterString) {
         String[] enterStrings = enterString.split(" ");
         if (ProcessErrorCode(enterStrings)) {
             try {
@@ -67,7 +67,20 @@ public class CheckParseData {
         throw new RuntimeException("Данные некорректны");
     }
 
-    private int checkAmountData(String[] enterData) {
+    private boolean ProcessErrorCode(String[] enterData) {
+        int code = checkData(enterData);
+        if (code == -1) {
+            System.out.println("Вы ввели меньше данных, чем требуется");
+            CorrectData = false;
+            return false;
+        } else if (code == 1) {
+            System.out.println("Вы ввели больше данных, чем требуется");
+            CorrectData = false;
+            return false;
+        }
+        return true;
+    }
+    private int checkData(String[] enterData) {
         if (enterData.length < 6) {
             return -1;
         } else if (enterData.length > 6) {
@@ -76,43 +89,30 @@ public class CheckParseData {
         return 0;
     }
 
-    private boolean ProcessErrorCode(String[] enterData) {
-        int code = checkAmountData(enterData);
-        if (code == -1) {
-            System.out.println("Вы ввели меньше данных, чем требуется.");
-            CorrectData = false;
-            return false;
-        } else if (code == 1) {
-            System.out.println("Вы ввели больше данных, чем требуется.");
-            CorrectData = false;
-            return false;
-        }
-        return true;
-    }
 
     private void ParseData(String[] enterData) {
         for (String tempString : enterData) {
             if (Character.isDigit(tempString.charAt(0))) {
-                DigitParseData(tempString);
+                ParseNumber(tempString);
             } else if (tempString.length() == 1) {
-                if (tempString.equals("m") || tempString.equals("f")) {
+                if (tempString.equals("м") || tempString.equals("ж")) {
                     Gender = tempString.charAt(0);
                 } else {
                     throw new RuntimeException(
-                            "Введенные вами данные некорректны. Возможно вы неправильно обозначили ваш пол.");
+                            "Пол не распознан");
                 }
             } else if (Character.isAlphabetic(tempString.charAt(0))) {
-                WordParseData(tempString);
+                ParseName(tempString);
             } else {
-                throw new RuntimeException("Введенные вами данные некорректны");
+                throw new RuntimeException("Введенные данные некорректны");
             }
         }
 
     }
 
-    private void DigitParseData(String digitString) {
+    private void ParseNumber(String digitString) {
         if (digitString.indexOf('.') != -1) {
-            DateParseData(digitString);
+            ParseDate(digitString);
         } else {
             try {
                 Telephone = Long.parseLong(digitString);
@@ -122,9 +122,9 @@ public class CheckParseData {
         }
     }
 
-    private void DateParseData(String dateString) {
+    private void ParseDate(String dateString) {
         if (dateString.length() > 10 || dateString.codePointAt(2) != 46 || dateString.codePointAt(5) != 46) {
-            throw new RuntimeException("Дата неправильного формата.");
+            throw new RuntimeException("Неверный формат даты");
         }
         int day = 0;
         int month = 0;
@@ -135,19 +135,19 @@ public class CheckParseData {
             month = Integer.parseInt(temp[1]);
             year = Integer.parseInt(temp[2]);
         } catch (NumberFormatException e) {
-            System.out.println("Неправильный формат даты");
+            System.out.println("Неверный формат даты");
         }
         if (day > 0 && day < 32 && month > 0 && month < 13 && year > 1900 && year < 2024) {
             Date = dateString;
         } else {
-            throw new RuntimeException("Неправильный формат даты");
+            throw new RuntimeException("Неверный формат даты");
         }
     }
 
-    public void WordParseData(String wordString) {
+    public void ParseName(String wordString) {
         for (int i = 0; i < wordString.length(); i++) {
             if (!Character.isAlphabetic(wordString.charAt(i))) {
-                throw new RuntimeException("Неправильный формат ФИО");
+                throw new RuntimeException("Неверный формат ФИО");
             }
         }
         if (Surname == null) {
